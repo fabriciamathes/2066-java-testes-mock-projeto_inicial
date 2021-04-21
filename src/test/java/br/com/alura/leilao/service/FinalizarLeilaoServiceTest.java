@@ -97,6 +97,7 @@ class FinalizarLeilaoServiceTest {
 		/*
 		 * Simular uma Exception(Erro), verificando se o método enviadorDeEmails não é
 		 * chamado.
+		 * O método thenThrow forca o mock a lançar uma exception quando determinado método for chamado.
 		 */
 		Mockito.when(leilaoDao.salvar(Mockito.any())).thenThrow(RuntimeException.class);
 
