@@ -23,20 +23,25 @@ class FinalizarLeilaoServiceTest {
 
 	private FinalizarLeilaoService service;
 
-	@Mock //@Mock: marca um atributo como sendo um mock
+	@Mock // @Mock: marca um atributo como sendo um mock
 	private LeilaoDao leilaoDao;
 
-	@BeforeEach 
+	@Mock
+	private EnviadorDeEmails enviadorDeEmails;
+
+	@BeforeEach
 	public void beforeEach() {
 		MockitoAnnotations.initMocks(this);
-		this.service = new FinalizarLeilaoService(leilaoDao);
+		this.service = new FinalizarLeilaoService(leilaoDao, enviadorDeEmails);
 	}
 
 	@Test
 	void deveriaFinalizarUmLeilao() {
 		List<Leilao> leiloes = leiloes();
 
-		// when e thenReturn: Altera o comportamento de um método do mock. Altera o retorno padrão de um método no mock, configurado para utilizar os dados de teste da classe "leiloes"
+		// when e thenReturn: Altera o comportamento de um método do mock. Altera o
+		// retorno padrão de um método no mock, configurado para utilizar os dados de
+		// teste da classe "leiloes"
 		Mockito.when(leilaoDao.buscarLeiloesExpirados()).thenReturn(leiloes);
 
 		service.finalizarLeiloesExpirados();
@@ -45,12 +50,33 @@ class FinalizarLeilaoServiceTest {
 		Assert.assertTrue(leilao.isFechado());
 		Assert.assertEquals(new BigDecimal("900"), leilao.getLanceVencedor().getValor());
 
-		// verify: Checa se o mock teve um determinado método chamado, realizando assert. Verificando se o método "salvar".
+		// verify: Checa se o mock teve um determinado método chamado, realizando
+		// assert. Verificando se o método "salvar".
 		Mockito.verify(leilaoDao).salvar(leilao);
 
 	}
 
-	//dados de teste
+	@Test
+	void deveriaEnviarUmEmailParaVencedorDoLeilao() {
+		List<Leilao> leiloes = leiloes();
+
+		// when e thenReturn: Altera o comportamento de um método do mock. Altera o
+		// retorno padrão de um método no mock, configurado para utilizar os dados de
+		// teste da classe "leiloes"
+		Mockito.when(leilaoDao.buscarLeiloesExpirados()).thenReturn(leiloes);
+
+		service.finalizarLeiloesExpirados();
+
+		Leilao leilao = leiloes.get(0);
+		Lance lanceVencedor = leilao.getLanceVencedor();
+
+		// verify: Checa se o mock teve um determinado método chamado, realizando
+		// assert. Verificando se o método "salvar".
+		Mockito.verify(enviadorDeEmails).enviarEmailVencedorLeilao(lanceVencedor);
+
+	}
+
+	// dados de teste
 	private List<Leilao> leiloes() {
 		List<Leilao> lista = new ArrayList<>();
 
