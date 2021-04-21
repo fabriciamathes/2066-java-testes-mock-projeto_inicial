@@ -23,10 +23,10 @@ class FinalizarLeilaoServiceTest {
 
 	private FinalizarLeilaoService service;
 
-	@Mock
+	@Mock //@Mock: marca um atributo como sendo um mock
 	private LeilaoDao leilaoDao;
 
-	@BeforeEach
+	@BeforeEach 
 	public void beforeEach() {
 		MockitoAnnotations.initMocks(this);
 		this.service = new FinalizarLeilaoService(leilaoDao);
@@ -36,7 +36,7 @@ class FinalizarLeilaoServiceTest {
 	void deveriaFinalizarUmLeilao() {
 		List<Leilao> leiloes = leiloes();
 
-		// Configurando mokito para devolver os dados de teste da classe leiloes
+		// when e thenReturn: Altera o comportamento de um método do mock. Altera o retorno padrão de um método no mock, configurado para utilizar os dados de teste da classe "leiloes"
 		Mockito.when(leilaoDao.buscarLeiloesExpirados()).thenReturn(leiloes);
 
 		service.finalizarLeiloesExpirados();
@@ -45,11 +45,12 @@ class FinalizarLeilaoServiceTest {
 		Assert.assertTrue(leilao.isFechado());
 		Assert.assertEquals(new BigDecimal("900"), leilao.getLanceVencedor().getValor());
 
-		// fazer assertiva rm cima do mock
+		// verify: Checa se o mock teve um determinado método chamado, realizando assert. Verificando se o método "salvar".
 		Mockito.verify(leilaoDao).salvar(leilao);
 
 	}
 
+	//dados de teste
 	private List<Leilao> leiloes() {
 		List<Leilao> lista = new ArrayList<>();
 
